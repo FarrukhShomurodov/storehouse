@@ -20,7 +20,19 @@ Route::group(['middleware' => 'auth'], function () {
         'products.confirmSale'
     );
     Route::get('/products/{product}/confirmed', [ProductController::class, 'sale'])->name('products.sale');
+
+    Route::get('/products/{product}/redirect', [ProductController::class, 'redirect']);
+
     Route::get('/products/{product}/download-qr', [ProductController::class, 'downloadQrCode'])->name(
         'products.downloadQrCode'
     );
+});
+
+
+Route::get('test', function () {
+    $product = \App\Models\Product::query()->first();
+    return view('admin.products.sailed', [
+        'product' => $product,
+        'message' => 'Товар успешно продан!',
+    ]);
 });

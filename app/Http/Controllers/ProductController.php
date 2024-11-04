@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -77,13 +75,13 @@ class ProductController
         return redirect()->route('products.index')->with('success', 'Продукт успешно удален!');
     }
 
-    public function sale(Product $product): Factory|View|Application
+    public function sale(Product $product): View
     {
         if ($product->quantity > 0) {
             $product->quantity -= 1;
             $product->save();
 
-            return view('admin.products.confirmation', [
+            return view('admin.products.sailed', [
                 'product' => $product,
                 'message' => 'Товар успешно продан!',
             ]);
@@ -95,7 +93,7 @@ class ProductController
         }
     }
 
-    public function confirmSale(Product $product): Factory|View|Application
+    public function confirmSale(Product $product): View
     {
         if ($product->quantity > 0) {
             return view('admin.products.confirmation', [
