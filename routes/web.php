@@ -27,12 +27,3 @@ Route::group(['middleware' => 'auth'], function () {
         'products.downloadQrCode'
     );
 });
-
-
-Route::get('test', function () {
-    $product = \App\Models\Product::query()->first();
-    return view('admin.products.sailed', [
-        'product' => $product,
-        'message' => 'Товар успешно продан!',
-    ]);
-});
