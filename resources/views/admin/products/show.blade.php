@@ -49,7 +49,7 @@
                 </tr>
                 <tr>
                     <th>Цена:</th>
-                    <td>{{ $product->price }} руб.</td>
+                    <td>{{ $product->price }} uzs.</td>
                 </tr>
                 <tr>
                     <th>QR-код:</th>
