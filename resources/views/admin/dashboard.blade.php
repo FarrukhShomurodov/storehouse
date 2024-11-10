@@ -69,27 +69,34 @@
     <script>
         let salesChartOptions = {
             series: [{
-                name: 'Продажи',
+                name: "Продажи",
                 data: @json($salesStats['sales_over_time'])
             }],
             chart: {
+                height: 350,
                 type: 'line',
-            },
-            height: 350,
-            xaxis: {
-                categories: @json($salesStats['time_labels']),
-                title: {
-                    text: 'Дата'
+                zoom: {
+                    enabled: false
                 }
             },
-            yaxis: {
-                title: {
-                    text: 'Сумма (UZS)'
-                }
-            },
+            dataLabels: {
+                enabled: false
+                },
+            stroke: {
+                curve: 'straight'
+                },
             title: {
                 text: 'Продажи за последние 7 дней',
-                align: 'center'
+                align: 'left'
+            },
+            grid: {
+            row: {
+                colors: ['#f3f3f3', 'transparent'], 
+                opacity: 0.5
+            },
+            },
+            xaxis: {
+                categories: @json($salesStats['time_labels']),
             }
         };
 
@@ -102,23 +109,30 @@
                 data: @json($cancellationStats['cancellations_over_time'])
             }],
             chart: {
+                height: 350,
                 type: 'line',
-                height: 350
-            },
-            xaxis: {
-                categories: @json($cancellationStats['time_labels']),
-                title: {
-                    text: 'Дата'
+                zoom: {
+                    enabled: false
                 }
             },
-            yaxis: {
-                title: {
-                    text: 'Количество'
-                }
-            },
+            dataLabels: {
+                enabled: false
+                },
+            stroke: {
+                curve: 'straight'
+                },
             title: {
                 text: 'Отмены за последние 7 дней',
-                align: 'center'
+                align: 'left'
+            },
+            grid: {
+            row: {
+                colors: ['#f3f3f3', 'transparent'], 
+                opacity: 0.5
+            },
+            },
+            xaxis: {
+                 categories: @json($cancellationStats['time_labels']),
             }
         };
 
