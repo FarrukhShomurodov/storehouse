@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Session;
 
 class AuthController
 {
@@ -22,6 +23,13 @@ class AuthController
         ]);
 
         if (Auth::attempt($request->only('login', 'password'))) {
+            
+            if(Session::has('confirm-redirect')){
+                $url = Session::get('confirm-redirect');
+                Session::forget('confirm-redirect');
+                return redirect()->url($url);
+            }
+
             return redirect()->route('dashboard');
         }
 
