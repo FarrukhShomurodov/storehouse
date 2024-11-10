@@ -27,7 +27,7 @@ class AuthController
             if(Session::has('confirm-redirect')){
                 $url = Session::get('confirm-redirect');
                 Session::forget('confirm-redirect');
-                return redirect()->url($url);
+                return redirect($url);
             }
 
             return redirect()->route('dashboard');
