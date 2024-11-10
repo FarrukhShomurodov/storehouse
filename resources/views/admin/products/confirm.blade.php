@@ -32,9 +32,6 @@
                 <h4 class="mb-0 text-white">Подтверждение продажи</h4>
             </div>
             <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h5 class="fw-bold">{{ $message }}</h5>
-                </div>
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="table-responsive">
@@ -45,40 +42,54 @@
                                     <td class="text-dark">{{ $product->name }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="text-muted">Артикул:</th>
-                                    <td class="text-dark">{{ $product->sku }}</td>
-                                </tr>
-                                <tr>
                                     <th class="text-muted">Оставшееся количество:</th>
                                     <td class="text-dark">{{ $product->quantity }}</td>
                                 </tr>
                                 <tr>
                                     <th class="text-muted">Цена:</th>
-                                    <td class="text-dark">{{ $product->price }} ₽</td>
+                                    <td class="text-dark">{{ $product->price }} сум</td>
+                                </tr>
+                                <tr>
+                                    @if($unit->sold)
+                                        <th class="text-muted">Дата продажи:</th>
+                                        <td class="text-dark">{{ $unit->sold_at }} сум</td>
+                                    @endif
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
-                        @if($product->qr_code)
+                        @if($unit->qr_code)
                             <div class="text-center mt-4">
-                                <img src="{{ asset($product->qr_code) }}" alt="QR Code"
+                                <img src="{{ Storage::url($unit->qr_code) }}" alt="QR Code"
                                      class="img-fluid rounded" style="width: 150px;">
                             </div>
                         @endif
                     </div>
                 </div>
 
-                @if($product->quantity > 0)
-                    <div class="text-center mt-5">
-                        <button class="btn btn-success btn-lg px-5"
-                                onclick="location.href='{{ route('products.sale', $product->id) }}'">
-                            <i class="bx bx-check-circle me-1"></i> Подтвердить продажу
-                        </button>
-                    </div>
+
+                @if($unit->sold)
+                    <form action="{{ route('cancel', $unit->serial_number) }}" method="get" class="mt-4">
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                                <i class="bx bx-x-circle me-1"></i> Отменить продажу
+                            </button>
+                        </div>
+                    </form>
                 @else
-                    <div class="text-center mt-5">
-                        <p class="text-danger fw-bold">Товар больше не доступен.</p>
-                    </div>
+                    @if($product->quantity > 0)
+                        <form action="{{ route('sell', $unit->serial_number) }}" method="get">
+                            <div class="text-center mt-5">
+                                <button type="submit" class="btn btn-success btn-lg px-5">
+                                    <i class="bx bx-check-circle me-1"></i> Подтвердить продажу
+                                </button>
+                            </div>
+                        </form>
+                    @else
+                        <div class="text-center mt-5">
+                            <p class="text-danger fw-bold">Этот товар уже был продан или не существует.</p>
+                        </div>
+                    @endif
                 @endif
             </div>
             <div class="card-footer bg-light text-end">

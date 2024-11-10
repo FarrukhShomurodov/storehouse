@@ -40,36 +40,18 @@
             <table class="datatables-users table border-top">
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Название</th>
-                    <th>Артикул</th>
                     <th>Количество</th>
                     <th>Цена</th>
-                    <th>QR-код</th>
-                    <th>Действия</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($products as $product)
                     <tr>
-                        <td>{{ $product->id }}</td>
                         <td>{{ $product->name }}</td>
-                        <td>{{ $product->sku }}</td>
                         <td>{{ $product->quantity }}</td>
-                        <td>{{ $product->price }}</td>
-                        <td>
-                            @if($product->qr_code)
-                                <div class="d-flex flex-column align-items-center" style="width:50px">
-                                    <img src="{{ asset($product->qr_code) }}" alt="QR Code" width="50px" class="mb-2 rounded shadow-sm">
-                                    <a href="{{ route('products.downloadQrCode', $product->id) }}"
-                                       class="btn btn-sm btn-info text-white d-flex align-items-center justify-content-center text-center"
-                                       style="font-size: 0.9rem;">
-                                        <i class="bx bx-download me-1"></i>
-                                    </a>
-                                </div>
-                            @endif
-                        </td>
-
+                        <td>{{ round($product->price) }}</td>
                         <td>
                             <div class="d-inline-block text-nowrap">
                                 <button class="btn btn-sm btn-icon"

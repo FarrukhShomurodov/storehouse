@@ -5,16 +5,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('sku')->unique();
             $table->integer('quantity')->default(0);
-            $table->decimal('price', 8, 2);
-            $table->string('qr_code')->nullable();
+            $table->text('description');
+            $table->decimal('price', 10, 2)->default(0);
             $table->timestamps();
         });
     }

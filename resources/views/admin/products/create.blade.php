@@ -38,14 +38,6 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="sku">Артикул</label>
-                    <input type="text" name="sku" class="form-control @error('sku') is-invalid @enderror"
-                           id="sku" placeholder="Артикул" required>
-                    @error('sku')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="mb-3">
                     <label class="form-label" for="quantity">Количество</label>
                     <input type="number" name="quantity" class="form-control @error('quantity') is-invalid @enderror"
                            id="quantity" placeholder="Количество" required>
@@ -53,9 +45,17 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label" for="price">Цена</label>
+                    <label class="form-label" for="description">Описание</label>
+                    <textarea name="description"
+                              class="form-control @error('description') is-invalid @enderror"
+                              id="description" placeholder="Описание" required></textarea>
+                    @error('description')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="price">Цена (сум)</label>
                     <input type="text" name="price" class="form-control @error('price') is-invalid @enderror"
                            id="price" placeholder="Цена" required>
                     @error('price')

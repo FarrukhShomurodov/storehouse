@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use App\Models\ProductUnit;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProductController
 {
@@ -22,23 +26,37 @@ class ProductController
         return view('admin.products.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ProductRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'sku' => 'required|string|unique:products,sku|max:50',
-            'quantity' => 'required|integer',
-            'price' => 'required|numeric',
-        ]);
+        $product = Product::query()->create($request->validated());
 
-        $product = Product::query()->create($request->all());
-        $product->generateQrCode();
+        for ($i = 0; $i < $request->quantity; $i++) {
+            $uuid = (string)Str::uuid();
+            $filePath = 'qrcodes/' . $uuid . '.svg';
 
-        return redirect()->route('products.index')->with('success', 'Продукт успешно создан!');
+            $qrCode = QrCode::format('svg')->size(300)->generate(
+                url("product/$product->id/unit/$uuid/confirm")
+            );
+
+            $unit = ProductUnit::query()->create([
+                'product_id' => $product->id,
+                'serial_number' => $uuid,
+                'qr_code' => $filePath
+            ]);
+            Storage::disk('public')->put($filePath, $qrCode);
+        }
+
+        return redirect()->route('products.index')->with('success', 'Продукты добавлены и QR-коды сгенерированы!');
     }
 
-    public function show(Product $product): View
+    public function show($product_id): Factory|Application|View|RedirectResponse
     {
+        $product = Product::with('units')->find($product_id);
+
+        if (!$product) {
+            return redirect()->route('admin.products.show')->with('error', 'Продукт не найден!');
+        }
+
         return view('admin.products.show', compact('product'));
     }
 
@@ -47,77 +65,63 @@ class ProductController
         return view('admin.products.edit', compact('product'));
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(ProductRequest $request, Product $product): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'sku' => 'required|string|max:50|unique:products,sku,' . $product->id,
-            'quantity' => 'required|integer',
-            'price' => 'required|numeric',
-        ]);
+        $validated = $request->validated();
+        $currentQuantity = $product->quantity;
 
-        $product->update($request->all());
-        $product->generateQrCode();
+        if ((int)$validated['quantity'] < $currentQuantity) {
+            $quantityToDelete = $currentQuantity - (int)$validated['quantity'];
 
-        return redirect()->route('products.index')->with('success', 'Продукт успешно обновлен!');
+            $unitsToDelete = ProductUnit::where('product_id', $product->id)
+                ->latest()
+                ->take($quantityToDelete)
+                ->get();
+
+            foreach ($unitsToDelete as $unit) {
+                Storage::disk('public')->delete($unit->qr_code);
+                $unit->delete();
+            }
+        }
+
+        $product->quantity = (int)$validated['quantity'];
+
+        if ((int)$validated['quantity'] > $currentQuantity) {
+            $newUnitsCount = (int)$validated['quantity'] - $currentQuantity;
+
+            for ($i = 0; $i < $newUnitsCount; $i++) {
+                $uuid = (string)Str::uuid();
+                $filePath = 'qrcodes/' . $uuid . '.svg';
+
+                $qrCode = QrCode::format('svg')->size(300)->generate(
+                    url("product/$product->id/unit/$uuid/confirm")
+                );
+
+                $unit = ProductUnit::query()->create([
+                    'product_id' => $product->id,
+                    'serial_number' => $uuid,
+                    'qr_code' => $filePath
+                ]);
+
+                Storage::disk('public')->put($filePath, $qrCode);
+            }
+        }
+
+        $product->save();
+        return redirect()->route('products.index')->with('success', 'Продукт успешно обновлен! QR-коды обновлены!');
     }
 
     public function destroy(Product $product): RedirectResponse
     {
-        $filePath = str_replace('storage/', '', $product->qr_code);
+        $units = ProductUnit::where('product_id', $product->id)->get();
 
-        if ($product->qr_code && Storage::disk('public')->exists($filePath)) {
-            Storage::disk('public')->delete($filePath);
+        foreach ($units as $unit) {
+            Storage::disk('public')->delete($unit->qr_code);
+            $unit->delete();
         }
 
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Продукт успешно удален!');
-    }
-
-    public function sale(Product $product): View
-    {
-        if ($product->quantity > 0) {
-            $product->quantity -= 1;
-            $product->save();
-
-            return view('admin.products.sailed', [
-                'product' => $product,
-                'message' => 'Товар успешно продан!',
-            ]);
-        } else {
-            return view('admin.products.confirmation', [
-                'product' => $product,
-                'message' => 'Товар закончился!',
-            ]);
-        }
-    }
-
-    public function confirmSale(Product $product): View
-    {
-        if ($product->quantity > 0) {
-            return view('admin.products.confirmation', [
-                'product' => $product,
-                'message' => 'Товар успешно продан!',
-            ]);
-        } else {
-            return view('admin.products.confirmation', [
-                'product' => $product,
-                'message' => 'Товар закончился!',
-            ]);
-        }
-    }
-
-    public function downloadQrCode(Product $product): BinaryFileResponse|RedirectResponse
-    {
-        $filePath = str_replace('storage/', '', $product->qr_code);
-
-        if (!$product->qr_code || !Storage::disk('public')->exists($filePath)) {
-            return redirect()->back()->withErrors('QR-код не найден.');
-        }
-
-        $fullPath = Storage::disk('public')->path($filePath);
-
-        return response()->download($fullPath, "{$product->sku}_qrcode.svg");
+        return redirect()->route('products.index')->with('success', 'Продукт и его QR-коды успешно удалены!');
     }
 }

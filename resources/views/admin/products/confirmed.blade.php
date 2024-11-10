@@ -67,22 +67,38 @@
 <body>
 <div class="layout-wrapper layout-content-navbar d-flex justify-content-center align-items-center vh-100">
     <div class="container">
-        <div class="card shadow-lg border-0 mx-auto" style="max-width: 500px;">
-            <div class="card-body text-center">
-                <i class="icon bx bx-check-circle mb-3"></i>
-                <h1 class="mb-4">{{ $message }}</h1>
-                <p class="mb-3">
-                    Товар: <strong>{{ $product->name }}</strong>
-                </p>
-                <p class="mb-3">
-                    Оставшееся количество: <strong>{{ $product->quantity }}</strong>
-                </p>
-                <p class="text-muted mb-4">
-                    Вкладка закроется через <span id="timer">5</span> секунд.
-                </p>
+        @if($success)
+            <div class="card shadow-lg border-0 mx-auto" style="max-width: 500px;">
+                <div class="card-body text-center">
+                    <i class="icon bx bx-check-circle mb-3"></i>
+                    <h1 class="mb-4">{{ $success }}</h1>
+                    <p class="mb-3">
+                        Товар: <strong>{{ $product->name }}</strong>
+                    </p>
+                    <p class="mb-3">
+                        Оставшееся количество: <strong>{{ $product->quantity }}</strong>
+                    </p>
+                    <p class="text-muted mb-4">
+                        Вкладка закроется через <span id="timer">5</span> секунд.
+                    </p>
+                    <button onclick="closeTab()" class="btn btn-danger">Закрыть вкладку сейчас</button>
+                </div>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="d-flex flex-column align-items-center justify-content-center">
+                <div class="alert alert-solid-danger alert-dismissible d-flex align-items-center" role="alert">
+                    <i class="bx bx-error-circle fs-4 me-2"></i>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            {{ $error }}
+                        @endforeach
+                    </ul>
+                </div>
                 <button onclick="closeTab()" class="btn btn-danger">Закрыть вкладку сейчас</button>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 </body>
