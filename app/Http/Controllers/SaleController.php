@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ProductUnit;
 use App\Models\Sale;
+use App\Models\SaleCancellationLog;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 
 class SaleController
 {
@@ -42,7 +44,7 @@ class SaleController
         );
     }
 
-    public function cancel($serialNumber): View
+    public function cancel(Request $request, $serialNumber): View
     {
         $unit = ProductUnit::query()
             ->where('serial_number', $serialNumber)
@@ -63,6 +65,12 @@ class SaleController
         if ($sale) {
             $sale->delete();
         }
+
+        SaleCancellationLog::query()->create([
+            'product_id' => $unit->product->id,
+            'product_unit_id' => $unit->id,
+            'reason' => $request->input('reason'),
+        ]);
 
         $product = $unit->product;
         $product->quantity += 1;

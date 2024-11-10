@@ -29,7 +29,7 @@
     <div class="container">
         <div class="card shadow-lg border-0 mx-auto" style="max-width: 600px;">
             <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0 text-white">Подтверждение продажи</h4>
+                <h4 class="mb-0 text-white">Продажа</h4>
             </div>
             <div class="card-body p-4">
                 <div class="row justify-content-center">
@@ -69,9 +69,44 @@
 
 
                 @if($unit->sold)
-                    <form action="{{ route('cancel', $unit->serial_number) }}" method="get" class="mt-4">
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                    <form action="{{ route('cancel', $unit->serial_number) }}" method="POST"
+                          class="p-3 bg-white rounded border shadow-sm mt-3">
+                        @csrf
+
+                        @if($unit->cancelLog)
+                            <div class="mb-3">
+                                <h6 class="text-dark fw-bold mb-2">История отмен</h6>
+                                <div class="border p-2 rounded bg-light overflow-auto" style="max-height: 120px;">
+                                    @foreach($unit->cancelLog as $log)
+                                        <div class="d-flex justify-content-between mb-1 small">
+                                            <span class="text-dark">{{ $log->reason }}</span>
+                                            <span class="text-muted">{{ $log->created_at->format('d.m.Y H:i') }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label fw-semibold text-muted">
+                                Причина отмены
+                            </label>
+                            <textarea
+                                name="reason"
+                                id="reason"
+                                class="form-control @error('reason') is-invalid @enderror"
+                                placeholder="Укажите причину отмены"
+                                rows="3"
+                                required
+                                style="resize: none; border: 1px solid #ced4da; border-radius: 8px;"
+                            ></textarea>
+                            @error('reason')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-danger btn-lg fw-bold">
                                 <i class="bx bx-x-circle me-1"></i> Отменить продажу
                             </button>
                         </div>

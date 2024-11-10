@@ -25,7 +25,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Sell
     Route::get('info/{serialNumber}/sell')->name('info');
     Route::get('product/{serialNumber}/sell', [SaleController::class, 'sell'])->name('sell');
-    Route::get('product/{serialNumber}/cancel-sale', [SaleController::class, 'cancel'])->name('cancel');
+    Route::post('product/{serialNumber}/cancel-sale', [SaleController::class, 'cancel'])->name('cancel');
 
     Route::get('test', function () {
         $unit = \App\Models\ProductUnit::with('product')->first();
@@ -33,5 +33,4 @@ Route::group(['middleware' => 'auth'], function () {
 
         return view('admin.products.confirm', compact('unit', 'product'));
     });
-
 });
