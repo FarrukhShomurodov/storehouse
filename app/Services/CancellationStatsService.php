@@ -31,13 +31,32 @@ class CancellationStatsService
 
     private function getCancellationsOverTime()
     {
-        // Пример: Данные по отменам за последние 7 дней
-        return SaleCancellationLog::selectRaw('DATE(created_at) as date, COUNT(*) as total')
-            ->whereDate('created_at', '>', now()->subDays(7))
+        // Получаем данные по отменам за последние 7 дней
+        $cancellationsData = SaleCancellationLog::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+        ->whereDate('created_at', '>', now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date')
-            ->pluck('total', 'date');
+            ->get();
+
+        // Плоский массив для данных по отменам
+        $cancellationsOverTime = [];
+
+        // Получаем даты отмен и количество в ассоциативный массив
+        $cancellationDates = $cancellationsData->pluck('total', 'date')->toArray();
+
+        // Генерируем метки времени для последних 7 дней
+        $timeLabels = collect(range(0, 6))->map(function ($i) {
+            return now()->subDays(6 - $i)->format('Y-m-d'); // Форматируем в 'Y-m-d' для поиска по ключу
+        });
+
+        // Заполняем массив данными для графика, используя 0 для отсутствующих данных
+        foreach ($timeLabels as $date) {
+            $cancellationsOverTime[] = isset($cancellationDates[$date]) ? (int)$cancellationDates[$date] : 0;
+        }
+
+        return collect($cancellationsOverTime);
     }
+
 
     private function getTimeLabels()
     {

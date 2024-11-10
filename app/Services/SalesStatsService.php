@@ -32,19 +32,39 @@ class SalesStatsService
 
     private function getSalesOverTime()
     {
-        // Пример: Данные по продажам за последние 7 дней
-        return Sale::selectRaw('DATE(created_at) as date, SUM(price) as total')
-            ->whereDate('created_at', '>', now()->subDays(7))
+        // Получаем данные по продажам за последние 7 дней
+        $salesData = Sale::selectRaw('DATE(created_at) as date, SUM(price) as total')
+        ->whereDate('created_at', '>', now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date')
-            ->pluck('total', 'date');
+            ->get();
+
+        // Плоский массив для данных по продажам
+        $salesOverTime = [];
+
+        // Получаем даты продаж и суммы в ассоциативный массив
+        $salesDates = $salesData->pluck('total', 'date')->toArray();
+
+        // Генерируем метки времени для последних 7 дней
+        $timeLabels = collect(range(0, 6))->map(function ($i) {
+            return now()->subDays(6 - $i)->format('Y-m-d'); // Форматируем в 'Y-m-d' для поиска по ключу
+        });
+
+        // Заполняем массив данными для графика, используя 0 для отсутствующих данных
+        foreach ($timeLabels as $date) {
+            $salesOverTime[] = isset($salesDates[$date]) ? (float)$salesDates[$date] : 0.0;
+        }
+
+        return collect($salesOverTime);
     }
+
 
     private function getTimeLabels()
     {
-        // Пример: Возвращаем массив дат для оси X
+        // Формируем метки времени в формате 'день месяц' для последних 7 дней
         return collect(range(0, 6))->map(function ($i) {
             return now()->subDays(6 - $i)->format('d M');
         });
     }
+
 }

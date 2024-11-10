@@ -67,15 +67,15 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
-        var salesChartOptions = {
+        let salesChartOptions = {
             series: [{
                 name: 'Продажи',
                 data: @json($salesStats['sales_over_time'])
             }],
             chart: {
                 type: 'line',
-                height: 350
             },
+            height: 350,
             xaxis: {
                 categories: @json($salesStats['time_labels']),
                 title: {
@@ -93,10 +93,10 @@
             }
         };
 
-        var salesChart = new ApexCharts(document.querySelector("#sales-chart"), salesChartOptions);
+        let salesChart = new ApexCharts(document.querySelector("#sales-chart"), salesChartOptions);
         salesChart.render();
 
-        var cancellationsChartOptions = {
+        let cancellationsChartOptions = {
             series: [{
                 name: 'Отмены',
                 data: @json($cancellationStats['cancellations_over_time'])
@@ -122,10 +122,10 @@
             }
         };
 
-        var cancellationsChart = new ApexCharts(document.querySelector("#cancellations-chart"), cancellationsChartOptions);
+        let cancellationsChart = new ApexCharts(document.querySelector("#cancellations-chart"), cancellationsChartOptions);
         cancellationsChart.render();
 
-        var stockChartOptions = {
+        let stockChartOptions = {
             series: [{
                 name: 'Продано',
                 data: @json($stockStats['sold_units'])
@@ -154,7 +154,7 @@
             }
         };
 
-        var stockChart = new ApexCharts(document.querySelector("#stock-chart"), stockChartOptions);
+        let stockChart = new ApexCharts(document.querySelector("#stock-chart"), stockChartOptions);
         stockChart.render();
     </script>
 @endsection
