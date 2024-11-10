@@ -85,10 +85,6 @@
             stroke: {
                 curve: 'straight'
                 },
-            title: {
-                text: 'Продажи за последние 7 дней',
-                align: 'left'
-            },
             grid: {
             row: {
                 colors: ['#f3f3f3', 'transparent'], 
@@ -121,10 +117,6 @@
             stroke: {
                 curve: 'straight'
                 },
-            title: {
-                text: 'Отмены за последние 7 дней',
-                align: 'left'
-            },
             grid: {
             row: {
                 colors: ['#f3f3f3', 'transparent'], 
@@ -157,15 +149,6 @@
                     text: 'Продукты'
                 }
             },
-            yaxis: {
-                title: {
-                    text: 'Количество'
-                }
-            },
-            title: {
-                text: 'Запасы и продажи по продуктам',
-                align: 'center'
-            }
         };
 
         let stockChart = new ApexCharts(document.querySelector("#stock-chart"), stockChartOptions);
