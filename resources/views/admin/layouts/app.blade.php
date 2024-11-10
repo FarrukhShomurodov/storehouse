@@ -8,6 +8,8 @@
 
     @yield('title')
 
+     <link rel="shortcut icon" type="image/" href="{{ asset('img/warehouse.jpg') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
