@@ -33,4 +33,5 @@ Route::group(['middleware' => 'auth'], function () {
 
         return view('admin.products.confirm', compact('unit', 'product'));
     });
+
 });

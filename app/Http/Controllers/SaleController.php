@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductUnit;
+use App\Models\Sale;
 use Illuminate\Contracts\View\View;
 
 class SaleController
@@ -29,6 +30,12 @@ class SaleController
         $product->quantity -= 1;
         $product->save();
 
+        Sale::query()->create([
+            'product_id' => $product->id,
+            'product_unit_id' => $unit->id,
+            'price' => $product->price,
+        ]);
+
         return view('admin.products.confirmed', compact('product'))->with(
             'success',
             'Товар успешно продан.'
@@ -51,6 +58,11 @@ class SaleController
         $unit->update([
             'sold' => false
         ]);
+
+        $sale = $unit->sale;
+        if ($sale) {
+            $sale->delete();
+        }
 
         $product = $unit->product;
         $product->quantity += 1;
