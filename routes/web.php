@@ -23,14 +23,7 @@ Route::group(['middleware' => 'auth'], function () {
     );
 
     // Sell
-    Route::get('info/{serialNumber}/sell')->name('info');
+    Route::get('confirm/{serialNumber}/sell', [SaleController::class, 'confirm'])->name('confirm');
     Route::get('product/{serialNumber}/sell', [SaleController::class, 'sell'])->name('sell');
     Route::post('product/{serialNumber}/cancel-sale', [SaleController::class, 'cancel'])->name('cancel');
-
-    Route::get('test', function () {
-        $unit = \App\Models\ProductUnit::with('product')->first();
-        $product = $unit->product;
-
-        return view('admin.products.confirm', compact('unit', 'product'));
-    });
 });

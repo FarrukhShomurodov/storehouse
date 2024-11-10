@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\ProductUnit;
 use App\Models\Sale;
 use App\Models\SaleCancellationLog;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 class SaleController
 {
+    public function confirm($serialNumber): Factory|View|Application
+    {
+        $unit = ProductUnit::with('product')->where('serial_number', $serialNumber)->first();
+        $product = $unit->product;
+        return view('admin.products.confirm', compact('unit', 'product'));
+    }
+
     public function sell($serialNumber): View
     {
         $unit = ProductUnit::query()
