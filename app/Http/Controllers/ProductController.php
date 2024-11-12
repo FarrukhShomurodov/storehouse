@@ -35,7 +35,7 @@ class ProductController
             $filePath = 'qrcodes/' . $uuid . '.svg';
 
             $qrCode = QrCode::format('svg')->size(300)->generate(
-                url("confirm/$uuid/sell")
+                secure_url("confirm/$uuid/sell")
             );
 
             $unit = ProductUnit::query()->create([
@@ -94,7 +94,7 @@ class ProductController
                 $filePath = 'qrcodes/' . $uuid . '.svg';
 
                 $qrCode = QrCode::format('svg')->size(300)->generate(
-                    url("confirm/$uuid/sell")
+                    secure_url("confirm/$uuid/sell")
                 );
 
                 $unit = ProductUnit::query()->create([
