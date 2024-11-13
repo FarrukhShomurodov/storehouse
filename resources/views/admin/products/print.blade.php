@@ -38,7 +38,7 @@
         @foreach($product->units as $unit)
             @if (!$unit->sold)
                 <div class="col-md-4 qr-container">
-                    <img src="{{ Storage::url($unit->qr_code) }}" alt="QR Code">
+                    <img src="{{ Storage::url($unit->qr_code) }}" alt="QR Code" width="20px">
                     <div>
                         <strong>Серийный номер:</strong> {{ $unit->serial_number }} <br>
                         @if($unit->sale)

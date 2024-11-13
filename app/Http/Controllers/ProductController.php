@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use ZipArchive;
 
 class ProductController
 {
@@ -32,11 +33,11 @@ class ProductController
 
         for ($i = 0; $i < $request->quantity; $i++) {
             $uuid = (string)Str::uuid();
-            $filePath = 'qrcodes/' . $uuid . '.svg';
+            $filePath = $product->name.' qrcodes/' . $uuid . '.png';
 
-            $qrCode = QrCode::format('svg')->size(300)->generate(
+            $qrCode = QrCode::format('png')->size(300)->generate(
                 secure_url("confirm/$uuid/sell")
-            );
+            );  
 
             $unit = ProductUnit::query()->create([
                 'product_id' => $product->id,
@@ -91,9 +92,9 @@ class ProductController
 
             for ($i = 0; $i < $newUnitsCount; $i++) {
                 $uuid = (string)Str::uuid();
-                $filePath = 'qrcodes/' . $uuid . '.svg';
+                $filePath = $product->name . ' qrcodes/' . $uuid . '.png';
 
-                $qrCode = QrCode::format('svg')->size(300)->generate(
+                $qrCode = QrCode::format('png')->size(300)->generate(
                     secure_url("confirm/$uuid/sell")
                 );
 
@@ -134,6 +135,32 @@ class ProductController
         }
 
         return view('admin.products.print', compact('product'));
+    }
+
+    public function downloadQRCodes($product_id)
+    {
+        $product = Product::with('units')->find($product_id);
+
+        if (!$product) {
+            return redirect()->route('products.index')->with('error', 'Продукт не найден!');
+        }
+        $zipFileName = 'qr_codes_' . $product->name . '.zip';
+        $zipFilePath = storage_path('app/public/' . $zipFileName);
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            foreach ($product->units as $unit) {
+                $qrCodePath = Storage::disk('public')->path($unit->qr_code);
+                if (file_exists($qrCodePath)) {
+                    $zip->addFile($qrCodePath, 'qr_codes/qr_code_' . $unit->serial_number . '.svg');
+                }
+            }
+            $zip->close();
+        } else {
+            return redirect()->route('products.index')->with('error', 'Не удалось создать ZIP архив.');
+        }
+
+        return response()->download($zipFilePath)->deleteFileAfterSend(true);
     }
 
 }

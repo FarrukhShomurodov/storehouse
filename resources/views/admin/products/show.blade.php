@@ -18,8 +18,11 @@
                 <a href="{{ route('products.index') }}" class="btn btn-secondary btn-sm me-2">
                     <i class="bx bx-arrow-back me-1"></i> Назад к списку
                 </a>
-                <a href="{{ route('products.printQRCodes', $product->id) }}" target="_blank" class="btn btn-primary btn-sm">
+                <a href="{{ route('products.printQRCodes', $product->id) }}" target="_blank" class="btn btn-primary btn-sm me-2">
                     <i class="bx bx-printer me-1"></i> Распечатать все QR-коды
+                </a>
+                <a href="{{ route('products.downloadQRCodes', $product->id) }}" class="btn btn-success btn-sm">
+                    <i class="bx bx-download me-1"></i> Скачать все QR-коды
                 </a>
             </div>
         </div>
