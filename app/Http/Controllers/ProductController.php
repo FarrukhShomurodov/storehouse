@@ -153,7 +153,7 @@ class ProductController
                 if(!$unit->sold){
                     $qrCodePath = Storage::disk('public')->path($unit->qr_code);
                     if (file_exists($qrCodePath)) {
-                        $zip->addFile($qrCodePath, 'qr_codes/qr_code_' . $unit->serial_number . '.svg');
+                        $zip->addFile($qrCodePath, 'qr_codes/qr_code_' . $unit->serial_number . '.png');
                     }
                 }
             }
