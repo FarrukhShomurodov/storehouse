@@ -55,7 +55,6 @@
 
 <script>
     window.onload = () => {
-        // Автоматическая печать при загрузке страницы
         window.print();
     };
 </script>
