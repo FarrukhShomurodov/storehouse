@@ -52,7 +52,7 @@
                                 <tr>
                                     @if($unit->sold)
                                         <th class="text-muted">Дата продажи:</th>
-                                        <td class="text-dark">{{ $unit->sold_at }} сум</td>
+                                        <td class="text-dark">{{ $unit->sold_at }}</td>
                                     @endif
                                 </tr>
                                 </tbody>

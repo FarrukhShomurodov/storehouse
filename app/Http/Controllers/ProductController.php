@@ -150,9 +150,11 @@ class ProductController
         $zip = new ZipArchive;
         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
             foreach ($product->units as $unit) {
-                $qrCodePath = Storage::disk('public')->path($unit->qr_code);
-                if (file_exists($qrCodePath)) {
-                    $zip->addFile($qrCodePath, 'qr_codes/qr_code_' . $unit->serial_number . '.svg');
+                if(!$unit->sold){
+                    $qrCodePath = Storage::disk('public')->path($unit->qr_code);
+                    if (file_exists($qrCodePath)) {
+                        $zip->addFile($qrCodePath, 'qr_codes/qr_code_' . $unit->serial_number . '.svg');
+                    }
                 }
             }
             $zip->close();
