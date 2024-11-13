@@ -36,17 +36,19 @@
     <h4 class="mb-4">QR-коды для продукта: {{ $product->name }}</h4>
     <div class="row">
         @foreach($product->units as $unit)
-            <div class="col-md-4 qr-container">
-                <img src="{{ Storage::url($unit->qr_code) }}" alt="QR Code">
-                <div>
-                    <strong>Серийный номер:</strong> {{ $unit->serial_number }} <br>
-                    @if($unit->sale)
-                        <span class="badge bg-danger">Продано</span>
-                    @else
-                        <span class="badge bg-success">В наличии</span>
-                    @endif
+            @if (!$unit->sold)
+                <div class="col-md-4 qr-container">
+                    <img src="{{ Storage::url($unit->qr_code) }}" alt="QR Code">
+                    <div>
+                        <strong>Серийный номер:</strong> {{ $unit->serial_number }} <br>
+                        @if($unit->sale)
+                            <span class="badge bg-danger">Продано</span>
+                        @else
+                            <span class="badge bg-success">В наличии</span>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            @endif
         @endforeach
     </div>
 </div>
