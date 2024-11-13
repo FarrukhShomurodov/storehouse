@@ -124,4 +124,16 @@ class ProductController
 
         return redirect()->route('products.index')->with('success', 'Продукт и его QR-коды успешно удалены!');
     }
+
+    public function printQRCodes($product)
+    {
+        $product = Product::with('units')->find($product);
+
+        if (!$product) {
+            return redirect()->route('products.index')->with('error', 'Продукт не найден!');
+        }
+
+        return view('admin.products.print', compact('product'));
+    }
+
 }

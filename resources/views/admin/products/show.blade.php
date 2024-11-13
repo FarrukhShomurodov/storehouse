@@ -15,8 +15,11 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Информация о продукте</h5>
             <div class="d-flex">
-                <a href="{{ route('products.index') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('products.index') }}" class="btn btn-secondary btn-sm me-2">
                     <i class="bx bx-arrow-back me-1"></i> Назад к списку
+                </a>
+                <a href="{{ route('products.printQRCodes', $product->id) }}" target="_blank" class="btn btn-primary btn-sm">
+                    <i class="bx bx-printer me-1"></i> Распечатать все QR-коды
                 </a>
             </div>
         </div>

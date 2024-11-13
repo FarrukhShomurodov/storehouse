@@ -16,6 +16,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Products
     Route::resource('products', ProductController::class);
+    Route::get('/products/{product}/print', [ProductController::class, 'printQRCodes'])->name('products.printQRCodes');
 
     // Units Products
     Route::delete('/unit-products/{productUnit}', [ProductUnitController::class, 'destroy'])->name(
