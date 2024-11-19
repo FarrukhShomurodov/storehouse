@@ -1,3 +1,5 @@
+@php $count = 1 @endphp
+
 @extends('admin.layouts.app')
 
 @section('title')
@@ -14,11 +16,15 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Информация о продукте</h5>
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
+                <div class="me-2">
+                    Кол-во qr: <span class="me-2">{{$count}}</span>
+                </div>
                 <a href="{{ route('products.index') }}" class="btn btn-secondary btn-sm me-2">
                     <i class="bx bx-arrow-back me-1"></i> Назад к списку
                 </a>
-                <a href="{{ route('products.printQRCodes', $product->id) }}" target="_blank" class="btn btn-primary btn-sm me-2">
+                <a href="{{ route('products.printQRCodes', $product->id) }}" target="_blank"
+                   class="btn btn-primary btn-sm me-2">
                     <i class="bx bx-printer me-1"></i> Распечатать все QR-коды
                 </a>
                 <a href="{{ route('products.downloadQRCodes', $product->id) }}" class="btn btn-success btn-sm">
@@ -51,11 +57,14 @@
                 <div class="col-md-6">
                     @foreach($product->units as $unit)
                         <div class="d-flex flex-column align-items-start mb-3 p-2 border-bottom">
+                            <p><b>{{ $count++ }}</b></p>
                             <div class="d-flex align-items-center mb-2">
                                 <img src="{{ Storage::url($unit->qr_code) }}" alt="QR Code"
-                                     class="rounded" style="width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+                                     class="rounded"
+                                     style="width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
                                 <div>
-                                    <a href="{{ Storage::url($unit->qr_code) }}" download="qr_code_{{ $unit->serial_number }}.svg"
+                                    <a href="{{ Storage::url($unit->qr_code) }}"
+                                       download="qr_code_{{ $unit->serial_number }}.svg"
                                        class="text-primary me-2">
                                         <i class="bx bx-download"></i> Скачать
                                     </a>

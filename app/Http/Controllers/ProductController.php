@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
+use App\Jobs\GenerateProductUnit;
 use App\Models\Product;
 use App\Models\ProductUnit;
 use Illuminate\Contracts\View\Factory;
@@ -29,23 +30,10 @@ class ProductController
 
     public function store(ProductRequest $request): RedirectResponse
     {
-        $product = Product::query()->create($request->validated());
+        $validated = $request->validated();
+        $product = Product::query()->create($validated);
 
-        for ($i = 0; $i < $request->quantity; $i++) {
-            $uuid = (string)Str::uuid();
-            $filePath = $product->name.' qrcodes/' . $uuid . '.png';
-
-            $qrCode = QrCode::format('png')->size(300)->generate(
-                secure_url("confirm/$uuid/sell")
-            );  
-
-            $unit = ProductUnit::query()->create([
-                'product_id' => $product->id,
-                'serial_number' => $uuid,
-                'qr_code' => $filePath
-            ]);
-            Storage::disk('public')->put($filePath, $qrCode);
-        }
+        GenerateProductUnit::dispatch($product, $validated['quantity']);
 
         return redirect()->route('products.index')->with('success', 'Продукты добавлены и QR-коды сгенерированы!');
     }
@@ -88,24 +76,7 @@ class ProductController
         $product->quantity = (int)$validated['quantity'];
 
         if ((int)$validated['quantity'] > $currentQuantity) {
-            $newUnitsCount = (int)$validated['quantity'] - $currentQuantity;
-
-            for ($i = 0; $i < $newUnitsCount; $i++) {
-                $uuid = (string)Str::uuid();
-                $filePath = $product->name . ' qrcodes/' . $uuid . '.png';
-
-                $qrCode = QrCode::format('png')->size(300)->generate(
-                    secure_url("confirm/$uuid/sell")
-                );
-
-                $unit = ProductUnit::query()->create([
-                    'product_id' => $product->id,
-                    'serial_number' => $uuid,
-                    'qr_code' => $filePath
-                ]);
-
-                Storage::disk('public')->put($filePath, $qrCode);
-            }
+            GenerateProductUnit::dispatch($product, (int)$validated['quantity']);
         }
 
         $product->save();
